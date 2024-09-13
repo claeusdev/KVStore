@@ -42,6 +42,7 @@ class LRU<K> implements Iterable<LRU<K>.Node>{
         public Node() {
             data = null;
         }
+
         public Node(K key) {
             data = key;
         }
@@ -98,14 +99,18 @@ class LRU<K> implements Iterable<LRU<K>.Node>{
     }
 
     Node find(K key) {
-        LRU.Node node = head;
-        while (node.data != null) {
-            if (node.data.equals(key)) {
-                return node;
+        Node currentNode = head;
+        while (currentNode.getNext() != null) {
+            if (isKeyMatching(currentNode, key)) {
+                return currentNode;
             }
-            node = node.next;
+            currentNode = currentNode.getNext();
         }
         return null;
+    }
+
+    private boolean isKeyMatching(Node node, K key) {
+        return node.getData() != null && node.getData().equals(key);
     }
 
     Node removeFirst() {
