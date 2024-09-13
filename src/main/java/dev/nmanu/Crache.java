@@ -1,22 +1,23 @@
 package dev.nmanu;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 
 class Crache<K, V> extends Cache<K, V> {
     private EvictionPolicy policy;
 
     private HashMap<K, V> store;
-    private LinkedList<K, V> evictionList;
+    private LRU<K> evictionList;
 
     Crache() {
         store = new HashMap<>();
-        evictionList = new LinkedList<>();
+        evictionList = new LRU<>();
         policy = EvictionPolicy.LRU;
     }
 
     Crache(EvictionPolicy policy) {
         store = new HashMap<>();
-        evictionList = new LinkedList<>();
+        evictionList = new LRU<>();
         this.policy = policy;
     }
 
@@ -29,7 +30,6 @@ class Crache<K, V> extends Cache<K, V> {
         V value = store.get(key);
         if (value != null) {
             System.out.println("HIT: " + key + " : " + evictionList.find(key));
-
             evictionList.promoteToRecent(evictionList.find(key));
         }
 
@@ -38,20 +38,20 @@ class Crache<K, V> extends Cache<K, V> {
 
     @Override
     void put(K key, V value) {
-        evictionList.add(key, value);
+        evictionList.add(key);
         store.put(key, value);
     }
 
     @Override
     void evict() {
-        LinkedList<K, V>.Node node = evictionList.removeFirst();
+        LRU<K>.Node node = evictionList.removeFirst();
         if (node != null && node.getData() != null) {
-            K keyToRemove = node.getData().keySet().iterator().next();
+            K keyToRemove = node.getData();
             store.remove(keyToRemove);
         }
     }
 
-    LinkedList<K, V> getEvictionList() {
+    LRU<K> getEvictionList() {
         return evictionList;
     }
 

@@ -12,8 +12,8 @@ public class Main {
         int next = KVStore.get("b");
         KVStore.evict();
 
-        LinkedList<String, Integer> a = KVStore.getEvictionList();
-        Iterator<LinkedList<String, Integer>.Node> it = a.iterator();
+        LRU<String> a = KVStore.getEvictionList();
+        Iterator<LRU<String>.Node> it = a.iterator();
         while (it.hasNext()) {
             System.out.println(it.next());
         }
