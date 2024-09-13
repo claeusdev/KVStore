@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-class LinkedList<K, V> implements Iterable<LinkedList<K, V>.Node>{
+class LRU<K> implements Iterable<LRU<K>.Node>{
     private Node head;
     private Node tail;
     private int size;
@@ -35,17 +35,16 @@ class LinkedList<K, V> implements Iterable<LinkedList<K, V>.Node>{
     }
 
     class Node {
-        private HashMap<K, V> data;
+        private K data;
         private Node next;
         private Node prev;
 
-        public Node(){
-            data = new HashMap<>();
+        public Node() {
+            data = null;
         }
 
-        public Node(K key, V value) {
-            data = new HashMap<>();
-            data.put(key, value);
+        public Node(K key) {
+            data = key;
         }
 
         public Node getNext() {
@@ -56,21 +55,12 @@ class LinkedList<K, V> implements Iterable<LinkedList<K, V>.Node>{
             return prev;
         }
 
-        public HashMap<K, V> getData() {
+        public K getData() {
             return data;
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            for (var entry : data.entrySet()){
-                sb.append(entry.getKey() + " : " + entry.getValue() + "\n");
-            }
-            return sb.toString();
         }
     }
 
-    LinkedList() {
+    LRU() {
         head = new Node();
         tail = new Node();
         head.next = tail;
@@ -99,8 +89,8 @@ class LinkedList<K, V> implements Iterable<LinkedList<K, V>.Node>{
         return size == 0;
     }
 
-    void add(K key, V value) {
-        Node newNode = new Node(key, value);
+    void add(K key) {
+        Node newNode = new Node(key);
         tail.prev.next = newNode;
         newNode.prev = tail.prev;
         tail.prev = newNode;
@@ -109,14 +99,18 @@ class LinkedList<K, V> implements Iterable<LinkedList<K, V>.Node>{
     }
 
     Node find(K key) {
-        LinkedList.Node node = head;
-        while (node != null) {
-            if (node.data.containsKey(key)) {
-                return node;
+        Node currentNode = head;
+        while (currentNode.getNext() != null) {
+            if (isKeyMatching(currentNode, key)) {
+                return currentNode;
             }
-            node = node.next;
+            currentNode = currentNode.getNext();
         }
         return null;
+    }
+
+    private boolean isKeyMatching(Node node, K key) {
+        return node.getData() != null && node.getData().equals(key);
     }
 
     Node removeFirst() {
@@ -142,7 +136,6 @@ class LinkedList<K, V> implements Iterable<LinkedList<K, V>.Node>{
         node.prev = tail.prev;
         node.next = tail;
         tail.prev = node;
-
     }
 
     @Override
