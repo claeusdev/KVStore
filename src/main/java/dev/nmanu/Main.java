@@ -10,6 +10,8 @@ public class Main {
         KVStore.put("c", 3);
         int last = KVStore.get("a");
         int next = KVStore.get("b");
+        KVStore.evict();
+        KVStore.evict();
 
         LRU<String> a = KVStore.getEvictionList();
         Iterator<LRU<String>.Node> it = a.iterator();
